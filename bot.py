@@ -37,20 +37,41 @@ def get_update():
     return r
 
 
-def add_english(message):
-    id = message['from_id']
-    if base.get('english', "*", f'id={id}') is not None:
-        return
-    last_name = base.get('peoples', 'last_name', f'id={id}')
-    base.append("english", id, last_name)
+def set_timer(id, lesson):
+    timer = base.get(lesson, "timer", f'id={id}')
+    if timer == 0:
+        base.edit(lesson, 'timer', int(time.time()))
+        last_name = base.get('people', "last_name", f'id={id}')
+        send_cancel(f"@id{id}({last_name}), Ваше место в очереди будет удалено через 3 минуты.",
+                    f"\"{lesson}\"")
+    else:
+        timer_delete(id, lesson)
 
 
-def add_programing(message):
+def timer_delete(id, lesson):
+    timer = base.get(lesson, "timer", f'id={id}')
+    if timer != 0:
+        if timer+180 < time.time():
+            base.delete(lesson, 'id', id)
+
+
+def add_in_queue(message, lesson):
+    check_all_on_timer()
     id = message['from_id']
-    if base.get('programing', "*", f'id={id}') is not None:
-        return
-    last_name = base.get('peoples', 'last_name', f'id={id}')
-    base.append("programing", id, last_name)
+    if base.get(lesson, "*", f'id={id}') is not None:
+        set_timer(id, lesson)
+    else:
+        last_name = base.get('peoples', 'last_name', f'id={id}')
+        base.append(lesson, id, last_name, 0)
+
+
+def cancel(message, lesson):
+    id = message['from_id']
+    timer = base.get(lesson, "timer", f'id={id}')
+    if timer != 0:
+        base.edit(lesson, "timer", 0)
+        last_name = base.get('people', 'last_name', f'id={id}')
+        send_message(f"@id{id}({last_name}), действие отменено.")
 
 
 def handle_chat(message):
@@ -58,12 +79,16 @@ def handle_chat(message):
         return
     payload = message['payload']
     if payload == '1':
-        add_english(message)
+        add_in_queue(message, "english")
     elif payload == '2':
-        add_programing(message)
+        add_in_queue(message, 'programing')
     elif payload == '3':
         if not first_start:
             send_message(get_queue(), chat_peer, notify_off=1)
+    elif payload == '"english"':
+        cancel(message, 'english')
+    elif payload == '"programing"':
+        cancel(message, 'programing')
 
 
 def handle_admin(message):
@@ -89,6 +114,28 @@ def send_message(message, peer, notify_off=0):
              disable_mentions=notify_off)
 
 
+def send_cancel(message, payload):
+    cancel = Keyboard.Button.text(label="Отмена", payload=payload, color='negative')
+    keyboard = Keyboard.create([cancel], inline=True)
+    r = post("messages.send",
+             secret=secret,
+             v="5.103",
+             access_token=token,
+             peer_id=chat_peer,
+             random_id=-random.randint(100000000, 999999999),
+             message=message,
+             keyboard=keyboard)
+
+
+def check_all_on_timer():
+    eng = base.get_all("english")
+    for i in range(len(eng), 0, -1):
+        timer_delete(eng[i-1][0], "english")
+    prog = base.get_all("programing")
+    for i in range(len(prog), 0, -1):
+        timer_delete(prog[i - 1][0], "programing")
+
+
 def get_queue():
     text = "Очередь на английский:\n"
     eng = base.get_all("english")
@@ -101,17 +148,28 @@ def get_queue():
     return text
 
 
+def debug():
+    print(update['updates'][0]['object']['message']['payload'])
+    input()
+
+
 if __name__ == "__main__":
     base = DataBase("base.db")
     first_start = True
-    while True:
-        print(time.ctime())
-        update = get_update()
-        for obj in update['updates']:
-            message = obj['object']['message']
-            peer = message['peer_id']
-            if peer == chat_peer:
-                handle_chat(message)
-            elif peer == admin_peer:
-                handle_admin(message)
-        first_start = False
+    try:
+        while True:
+            print(time.ctime())
+            update = get_update()
+            #debug()
+            for obj in update['updates']:
+                message = obj['object']['message']
+                peer = message['peer_id']
+                if peer == chat_peer:
+                    handle_chat(message)
+                elif peer == admin_peer:
+                    handle_admin(message)
+            first_start = False
+    except Exception as err:
+        e = err
+    send_message("Я сломался, мать!", admin_peer)
+    raise e
