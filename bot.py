@@ -97,6 +97,7 @@ def get_queue():
     text += "\n\nОчередь на програмирование:\n"
     for i in range(len(prog)):
         text += f"{i+1}. @id{prog[i][0]}({prog[i][1]})\n"
+    return text
 
 
 if __name__ == "__main__":
