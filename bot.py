@@ -40,7 +40,7 @@ def get_update():
 def set_timer(id, lesson):
     timer = base.get(lesson, "timer", f'id={id}')
     if timer == 0:
-        base.edit(lesson, 'timer', int(time.time()))
+        base.edit(lesson, 'timer', int(time.time())+180)
         last_name = base.get('peoples', "last_name", f'id={id}')
         send_cancel(f"@id{id}({last_name}), Ваше место в очереди будет удалено через 3 минуты.",
                     f"\"{lesson}\"")
@@ -51,7 +51,7 @@ def set_timer(id, lesson):
 def timer_delete(id, lesson):
     timer = base.get(lesson, "timer", f'id={id}')
     if timer != 0:
-        if timer+180 < time.time():
+        if timer < time.time():
             base.delete(lesson, 'id', id)
 
 
@@ -68,6 +68,7 @@ def add_in_queue(message, lesson):
 def cancel(message, lesson):
     id = message['from_id']
     timer = base.get(lesson, "timer", f'id={id}')
+    print(timer)
     if timer != 0:
         base.edit(lesson, "timer", 0)
         last_name = base.get('peoples', 'last_name', f'id={id}')
