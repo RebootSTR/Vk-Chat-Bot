@@ -41,7 +41,7 @@ def set_timer(id, lesson):
     timer = base.get(lesson, "timer", f'id={id}')
     if timer == 0:
         base.edit(lesson, 'timer', int(time.time()))
-        last_name = base.get('people', "last_name", f'id={id}')
+        last_name = base.get('peoples', "last_name", f'id={id}')
         send_cancel(f"@id{id}({last_name}), Ваше место в очереди будет удалено через 3 минуты.",
                     f"\"{lesson}\"")
     else:
@@ -70,7 +70,7 @@ def cancel(message, lesson):
     timer = base.get(lesson, "timer", f'id={id}')
     if timer != 0:
         base.edit(lesson, "timer", 0)
-        last_name = base.get('people', 'last_name', f'id={id}')
+        last_name = base.get('peoples', 'last_name', f'id={id}')
         send_message(f"@id{id}({last_name}), действие отменено.")
 
 
