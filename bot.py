@@ -62,7 +62,8 @@ def handle_chat(message):
     elif payload == '2':
         add_programing(message)
     elif payload == '3':
-        send_message(get_queue(), chat_peer, notify_off=1)
+        if not first_start:
+            send_message(get_queue(), chat_peer, notify_off=1)
 
 
 def handle_admin(message):
@@ -113,3 +114,4 @@ if __name__ == "__main__":
                 handle_chat(message)
             elif peer == admin_peer:
                 handle_admin(message)
+        first_start = False
