@@ -1,5 +1,7 @@
+import json
 
-def create(*args):
+
+def create(*args, inline=False):
     buttons_array = []
     for arg in args:
         line = []
@@ -8,9 +10,10 @@ def create(*args):
         buttons_array.append(line)
     keyboard = {
         "one_time": False,
-        'buttons': buttons_array
+        'buttons': buttons_array,
+        'inline': inline
     }
-    return keyboard
+    return json.dumps(keyboard, ensure_ascii=False)
 
 
 class Button:
