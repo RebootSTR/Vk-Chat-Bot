@@ -71,7 +71,7 @@ def cancel(message, lesson):
     if timer != 0:
         base.edit(lesson, "timer", 0)
         last_name = base.get('peoples', 'last_name', f'id={id}')
-        send_message(f"@id{id}({last_name}), действие отменено.")
+        send_message(f"@id{id}({last_name}), действие отменено.", chat_peer)
 
 
 def handle_chat(message):
