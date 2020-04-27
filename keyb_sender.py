@@ -25,7 +25,7 @@ def send_chat(message):
              peer_id=chat_peer,
              random_id=-random.randint(100000000, 999999999),
              message=message,
-             keyboard=json.dumps(keyboard, ensure_ascii=False))
+             keyboard=keyboard)
     print(r)
 
 
@@ -33,6 +33,7 @@ def send_admin(message):
     eng_button = Keyboard.Button.text(label="Очистить Английский", payload='1', color='negative')
     prog_button = Keyboard.Button.text(label="Очистить Прогу", payload='2', color='negative')
     status_button = Keyboard.Button.text(label="Статус", payload='3')
+    test_button = Keyboard.Button.text(label="test payload", payload='\"cancel\"', color='negative')
     keyboard = Keyboard.create([eng_button, prog_button],
                                [status_button])
     r = post("messages.send",
@@ -42,11 +43,11 @@ def send_admin(message):
              peer_id=admin_peer,
              random_id=-random.randint(100000000, 999999999),
              message=message,
-             keyboard=json.dumps(keyboard, ensure_ascii=False))
+             keyboard=keyboard)
     print(r.json())
     #return keyboard
 
 
 if __name__ == "__main__":
-    #send_chat("update-mini")
+    #send_chat("update-mini\nПереписал код, возможно все сломается мгновенно)))")
     send_admin("test update")

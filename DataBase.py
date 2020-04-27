@@ -45,5 +45,11 @@ class DataBase:
         cursor.close()
         self.save()
 
+    def delete(self, table, column, value):
+        cursor = self.conn.cursor()
+        cursor.execute("delete from {} where {}=?".format(table, column), [value])
+        cursor.close()
+        self.save()
+
     def save(self):
         self.conn.commit()
