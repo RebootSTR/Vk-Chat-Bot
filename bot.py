@@ -154,7 +154,7 @@ def timer_delete(id, lesson):
 def delete_from_queue(lesson, id):
     base.delete(lesson, 'id', id)
     last_name = base.get('peoples', 'last_name', f'id={id}')
-    send_with_keyboard(f"@{id}({last_name}), был удален из очереди {'ENG' if lesson == 'english' else 'PROG'}.",
+    send_with_keyboard(f"@id{id}({last_name}), был удален из очереди {'ENG' if lesson == 'english' else 'PROG'}.",
                        chat_peer,
                        keyb_sender.default_keyboard(base.count("english"),
                                                     base.count("programing")))
