@@ -48,5 +48,11 @@ class DataBase:
         cursor.close()
         self.save()
 
+    def count(self, table):
+        cursor = self.conn.cursor()
+        result = cursor.execute(f"select count(*) from {table}").fetchone()[0]
+        cursor.close()
+        return result
+
     def save(self):
         self.conn.commit()
