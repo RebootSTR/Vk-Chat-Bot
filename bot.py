@@ -33,14 +33,14 @@ def get_update():
     if 'failed' in r.keys():
         r = update_keys(data)
     print("Обновлено")
-    base.edit("settings", "ts", r['ts'])
+    base.edit("settings", "ts", r['ts'], f"ts={data[3]}")
     return r
 
 
 def set_timer(id, lesson):
     timer = base.get(lesson, "timer", f'id={id}')
     if timer == 0:
-        base.edit(lesson, 'timer', int(time.time())+180)
+        base.edit(lesson, 'timer', int(time.time())+180, f"id={id}")
         last_name = base.get('peoples', "last_name", f'id={id}')
         send_cancel(f"@id{id}({last_name}), Ваше место в очереди будет удалено через 3 минуты.",
                     f"\"{lesson}\"")
@@ -70,7 +70,7 @@ def cancel(message, lesson):
     timer = base.get(lesson, "timer", f'id={id}')
     print(timer)
     if timer != 0:
-        base.edit(lesson, "timer", 0)
+        base.edit(lesson, "timer", 0, f"id={id}")
         last_name = base.get('peoples', 'last_name', f'id={id}')
         send_message(f"@id{id}({last_name}), действие отменено.", chat_peer)
 
@@ -150,7 +150,7 @@ def get_queue():
 
 
 def debug():
-    print(update['updates'][0]['object']['message']['payload'])
+    print(update)
     input()
 
 

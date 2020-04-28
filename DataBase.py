@@ -36,12 +36,9 @@ class DataBase:
         cursor.close()
         return data
 
-    def edit(self, table, column, value):
+    def edit(self, table, column, value, search):
         cursor = self.conn.cursor()
-        data = cursor.execute("SELECT {} FROM {}".format(column, table)).fetchone()
-        if data is not None:
-            data = data[0]
-            cursor.execute("update {} set {c}=? where {c}=?".format(table, c=column), [value, data])
+        cursor.execute("update {} set {}=? where {}".format(table, column, search), [value])
         cursor.close()
         self.save()
 
