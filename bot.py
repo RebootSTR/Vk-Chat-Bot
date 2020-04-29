@@ -81,22 +81,21 @@ def handle_chat(message):
     elif payload == '2':
         add_in_queue(message, 'programing')
     elif payload == '3':
-        send_with_keyboard(get_queue(), chat_peer, keyb_sender.default_keyboard(base.count("english"),
-                                                    base.count("programing")), notify_off=1)
+        send_message(get_queue(), chat_peer, notify_off=1)
     elif payload == '"english"':
         cancel(message, 'english')
     elif payload == '"programing"':
         cancel(message, 'programing')
 
 
-def prepare(lesson):
+def prepare(lesson, add=True):
     send_message("Очередь будет очищена через 1 минуту. Бот будет неактивен в течение этого времени", chat_peer)
     time.sleep(60)
-    count = base.count(lesson)
     base.delete_all(lesson)
     r = get_update(wait=1)
     send_message("Очередь очищена, запись возобновлена", chat_peer)
-    F(lesson, count)
+    if add:
+        F(lesson)
 
 
 def handle_admin(message):
@@ -109,6 +108,17 @@ def handle_admin(message):
         prepare("programing")
     elif payload == '3':
         send_message("All work!", admin_peer)
+    elif payload == '11':
+        prepare("english", add=False)
+    elif payload == '22':
+        prepare("programing", add=False)
+    elif payload == '4':
+        everyone = "ВАЖНО!\n[club192889258|@everyone]\n[id53725133|⠀][id77957660|⠀][id116791458|⠀][id132393037|⠀][" \
+                   "id151820739|⠀][id157302578|⠀][id162013508|⠀][id172396829|⠀][id189104642|⠀][id191604867|⠀][" \
+                   "id230434103|⠀][id254215836|⠀][id274839705|⠀][id282474619|⠀][id299082473|⠀][id311856945|⠀][" \
+                   "id326818928|⠀][id347503343|⠀][id413262496|⠀][id479162808|⠀][id481172781|⠀][id535638545|⠀][" \
+                   "id540487388|⠀][id560524444|⠀] "
+        send_message(everyone, chat_peer)
 
 
 def send_message(message, peer, notify_off=0):
@@ -154,13 +164,11 @@ def timer_delete(id, lesson):
 def delete_from_queue(lesson, id):
     base.delete(lesson, 'id', id)
     last_name = base.get('peoples', 'last_name', f'id={id}')
-    send_with_keyboard(f"@id{id}({last_name}), был удален из очереди {'ENG' if lesson == 'english' else 'PROG'}.",
-                       chat_peer,
-                       keyb_sender.default_keyboard(base.count("english"),
-                                                    base.count("programing")))
+    send_message(f"@id{id}({last_name}), был удален из очереди {'ENG' if lesson == 'english' else 'PROG'}.",
+                 chat_peer)
 
 
-def send_with_keyboard(message, peer, keyboard, notify_off=0):
+def send_with_keyboard(message, peer, keyboard, notify_off=0): #no using more
     r = post("messages.send",
              secret=secret,
              v="5.103",
@@ -178,7 +186,7 @@ def get_queue():
     for i in range(len(eng)):
         text += f"{i + 1}. @id{eng[i][0]}({eng[i][1]})\n"
     prog = base.get_all("programing")
-    text += "\n\nОчередь на програмирование:\n"
+    text += "\n\nОчередь на программирование:\n"
     for i in range(len(prog)):
         text += f"{i + 1}. @id{prog[i][0]}({prog[i][1]})\n"
     return text

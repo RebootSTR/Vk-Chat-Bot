@@ -6,7 +6,7 @@ from vars import *
 from api_requests import *
 
 
-def default_keyboard(eng_count, prog_count):
+def default_keyboard(eng_count, prog_count): #no using more
     queue_label = Keyboard.Button.link(label="Кнопки занятия очереди:")
     eng_button = Keyboard.Button.text(label=f"Английский({eng_count})", payload='1')
     prog_button = Keyboard.Button.text(label=f"Программирование({prog_count})", payload='2')
@@ -45,11 +45,16 @@ def send_chat(message):
 
 
 def send_admin(message):
-    eng_button = Keyboard.Button.text(label="Очистить Английский", payload='1', color='negative')
-    prog_button = Keyboard.Button.text(label="Очистить Прогу", payload='2', color='negative')
+    eng_button = Keyboard.Button.text(label="Английский", payload='1', color='negative')
+    prog_button = Keyboard.Button.text(label="Прога", payload='2', color='negative')
+    eng_button1 = Keyboard.Button.text(label="Английский(Without)", payload='11', color='negative')
+    prog_button1 = Keyboard.Button.text(label="Прога(Without)", payload='22', color='negative')
     status_button = Keyboard.Button.text(label="Статус", payload='3')
-    test_button = Keyboard.Button.text(label="test payload", payload='\"cancel\"', color='negative')
+    everyone_button = Keyboard.Button.text(label="@everyone", payload='4', color='positive')
+    #test_button = Keyboard.Button.text(label="test payload", payload='\"cancel\"', color='negative')
     keyboard = Keyboard.create([eng_button, prog_button],
+                               [eng_button1, prog_button1],
+                               [everyone_button],
                                [status_button])
     r = post("messages.send",
              secret=secret,
@@ -64,5 +69,6 @@ def send_admin(message):
 
 
 if __name__ == "__main__":
+    everyone = "[club192889258|@everyone]\n[id53725133|⠀][id77957660|⠀][id116791458|⠀][id132393037|⠀][id151820739|⠀][id157302578|⠀][id162013508|⠀][id172396829|⠀][id189104642|⠀][id191604867|⠀][id230434103|⠀][id254215836|⠀][id274839705|⠀][id282474619|⠀][id299082473|⠀][id311856945|⠀][id326818928|⠀][id347503343|⠀][id413262496|⠀][id479162808|⠀][id481172781|⠀][id535638545|⠀][id540487388|⠀][id560524444|⠀]"
     #send_chat("update-mini\nПереписал код, возможно все сломается мгновенно)))")
-    send_admin("test update")
+    send_admin(everyone)
