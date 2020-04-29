@@ -9,7 +9,7 @@ from vars import chat_peer
 from vars import token
 from vars import secret
 from vars import group_id
-from vars import F
+from vars import F, F1
 
 
 def update_keys(data, w):
@@ -113,13 +113,14 @@ def handle_admin(message):
     elif payload == '22':
         prepare("programing", add=False)
     elif payload == '4':
-        everyone = "ВАЖНО!\n[club192889258|@everyone]\n[id53725133|⠀][id77957660|⠀][id116791458|⠀][id132393037|⠀][" \
+        everyone = "ВАЖНО!\n[id53725133|⠀][id77957660|⠀][id116791458|⠀][id132393037|⠀][" \
                    "id151820739|⠀][id157302578|⠀][id162013508|⠀][id172396829|⠀][id189104642|⠀][id191604867|⠀][" \
                    "id230434103|⠀][id254215836|⠀][id274839705|⠀][id282474619|⠀][id299082473|⠀][id311856945|⠀][" \
                    "id326818928|⠀][id347503343|⠀][id413262496|⠀][id479162808|⠀][id481172781|⠀][id535638545|⠀][" \
-                   "id540487388|⠀][id560524444|⠀] "
+                   "id540487388|⠀][id560524444|⠀]\n@everyone"
         send_message(everyone, chat_peer)
-
+    elif payload == '44':
+        F1() #everyone N2
 
 def send_message(message, peer, notify_off=0):
     r = post("messages.send",
@@ -139,7 +140,7 @@ def send_cancel_button(message, payload, peer):
              secret=secret,
              v="5.103",
              access_token=token,
-             peer_id=peer,
+             peer_id=chat_peer,
              random_id=-random.randint(100000000, 999999999),
              message=message,
              keyboard=keyboard)
