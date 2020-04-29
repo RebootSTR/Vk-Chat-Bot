@@ -90,12 +90,12 @@ def handle_chat(message):
 
 
 def prepare(lesson):
-    send_message("Очередь будет очищена через 1 минуту. Бот будет неактивен в течение этого времени")
+    send_message("Очередь будет очищена через 1 минуту. Бот будет неактивен в течение этого времени", chat_peer)
     time.sleep(60)
     count = base.count(lesson)
     base.delete_all(lesson)
     r = get_update(wait=1)
-    send_message("Очередь очищена, запись возобновлена")
+    send_message("Очередь очищена, запись возобновлена", chat_peer)
     F(lesson, count)
 
 
