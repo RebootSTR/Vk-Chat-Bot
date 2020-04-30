@@ -54,5 +54,34 @@ class DataBase:
         cursor.close()
         return result
 
+    def move_down(self, table, now, need):
+        cursor = self.conn.cursor()
+        data = self.get_all(table)
+        count = len(data)
+        for i in range(now-1, count):
+            self.delete(table, "id", data[i][0])
+        for i in range(now, need):
+            self.append(table, *(data[i]))
+        self.append(table, *(data[now-1]))
+        for i in range(need, count):
+            self.append(table, *(data[i]))
+        cursor.close()
+        self.save()
+
+    def move_up(self, table, now, need):
+        cursor = self.conn.cursor()
+        data = self.get_all(table)
+        count = len(data)
+        for i in range(need-1, now-1):
+            self.delete(table, "id", data[i][0])
+        for i in range(now, count):
+            self.delete(table, "id", data[i][0])
+        for i in range(need-1, now-1):
+            self.append(table, *(data[i]))
+        for i in range(now, count):
+            self.append(table, *(data[i]))
+        cursor.close()
+        self.save()
+
     def save(self):
         self.conn.commit()

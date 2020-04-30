@@ -98,8 +98,32 @@ def prepare(lesson, add=True):
         F(lesson)
 
 
+def parse_command(text):
+    start = text.find("/")+1
+    text = text[start:]
+    space = text.find(" ")
+    table = text[:space]
+    start = space+1
+    text = text[start:]
+    space = text.find(" ")
+    now = int(text[:space])
+    need = int(text[space+1:])
+    if need > now:
+        base.move_down(table, now, need)
+    else:
+        base.move_up(table, now, need)
+
 def handle_admin(message):
     if 'payload' not in message:
+        text = str(message['text'])
+        if "/" not in text:
+            return
+        try:
+            parse_command(text)
+            send_message("OK", admin_peer)
+        except Exception as e:
+            send_message("Не распознал команду", admin_peer)
+            print(e)
         return
     payload = message['payload']
     if payload == "1":
@@ -121,6 +145,7 @@ def handle_admin(message):
         send_message(everyone, chat_peer)
     elif payload == '44':
         F1() #everyone N2
+
 
 def send_message(message, peer, notify_off=0):
     r = post("messages.send",
@@ -194,8 +219,8 @@ def get_queue():
 
 
 def debug():
+    chat_peer = 0
     print(update)
-    input()
 
 
 if __name__ == "__main__":
@@ -206,7 +231,7 @@ if __name__ == "__main__":
             print(time.ctime())
             update = get_update()
             check_all_on_timer()
-            # debug()
+            #debug()
             if not first_start:
                 for obj in update['updates']:
                     message = obj['object']['message']
