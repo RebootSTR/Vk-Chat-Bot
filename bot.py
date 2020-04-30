@@ -81,7 +81,8 @@ def handle_chat(message):
     elif payload == '2':
         add_in_queue(message, 'programing')
     elif payload == '3':
-        send_message(get_queue(), chat_peer, notify_off=1)
+        if antispam():
+            send_message(get_queue(), chat_peer, notify_off=1)
     elif payload == '"english"':
         cancel(message, 'english')
     elif payload == '"programing"':
@@ -112,6 +113,7 @@ def parse_command(text):
         base.move_down(table, now, need)
     else:
         base.move_up(table, now, need)
+
 
 def handle_admin(message):
     if 'payload' not in message:
@@ -223,8 +225,18 @@ def debug():
     print(update)
 
 
+def antispam():
+    global spam
+    if spam <= time.time():
+        spam = int(time.time())+60
+        return True
+    else:
+        return False
+
+
 if __name__ == "__main__":
     base = DataBase("base.db")
+    spam = 0
     first_start = True
     try:
         while True:
