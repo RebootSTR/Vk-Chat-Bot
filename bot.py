@@ -82,7 +82,10 @@ def handle_chat(message):
         add_in_queue(message, 'programing')
     elif payload == '3':
         if antispam():
-            send_message(get_queue(), chat_peer, notify_off=1)
+            send_message(get_queue('english'), chat_peer, notify_off=1)
+    elif payload == '33':
+        if antispam():
+            send_message(get_queue('programing'), chat_peer, notify_off=1)
     elif payload == '"english"':
         cancel(message, 'english')
     elif payload == '"programing"':
@@ -208,20 +211,21 @@ def send_with_keyboard(message, peer, keyboard, notify_off=0): #no using more
              disable_mentions=notify_off)
 
 
-def get_queue():
-    text = "Очередь на английский:\n"
-    eng = base.get_all("english")
-    for i in range(len(eng)):
-        text += f"{i + 1}. @id{eng[i][0]}({eng[i][1]})\n"
-    prog = base.get_all("programing")
-    text += "\n\nОчередь на программирование:\n"
-    for i in range(len(prog)):
-        text += f"{i + 1}. @id{prog[i][0]}({prog[i][1]})\n"
+def get_queue(lesson):
+    if lesson == 'english':
+        word = 'английский'
+    else:
+        word = 'программирование'
+    text = f"Очередь на {word}:\n"
+    data = base.get_all(lesson)
+    for i in range(len(data)):
+        text += f"{i + 1}. @id{data[i][0]}({data[i][1]})\n"
     return text
 
 
 def debug():
-    chat_peer = 0
+    global chat_peer
+    chat_peer = admin_peer
     print(update)
 
 
@@ -235,6 +239,7 @@ def antispam():
 
 
 if __name__ == "__main__":
+    ban = [116791458]
     base = DataBase("base.db")
     spam = 0
     first_start = True
@@ -243,12 +248,19 @@ if __name__ == "__main__":
             print(time.ctime())
             update = get_update()
             check_all_on_timer()
-            #debug()
+            deb = 0
+            if deb != 0:
+                debug()
             if not first_start:
                 for obj in update['updates']:
                     message = obj['object']['message']
                     peer = message['peer_id']
-                    if peer == chat_peer:
+                    if message['from_id'] in ban:
+                        continue
+                    if deb != 0:
+                        handle_chat(message)
+                        handle_admin(message)
+                    elif peer == chat_peer:
                         handle_chat(message)
                     elif peer == admin_peer:
                         handle_admin(message)
