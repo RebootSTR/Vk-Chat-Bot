@@ -239,7 +239,7 @@ def antispam():
 
 
 if __name__ == "__main__":
-    ban = [116791458]
+    ban = []
     base = DataBase("base.db")
     spam = 0
     first_start = True
