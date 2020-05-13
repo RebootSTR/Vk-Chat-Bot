@@ -10,6 +10,7 @@ from vars import token
 from vars import secret
 from vars import group_id
 from vars import F, F1
+import threading
 
 
 def update_keys(data, w):
@@ -103,15 +104,15 @@ def prepare(lesson, add=True):
 
 
 def parse_command(text):
-    start = text.find("/")+1
+    start = text.find("/") + 1
     text = text[start:]
     space = text.find(" ")
     table = text[:space]
-    start = space+1
+    start = space + 1
     text = text[start:]
     space = text.find(" ")
     now = int(text[:space])
-    need = int(text[space+1:])
+    need = int(text[space + 1:])
     if need > now:
         base.move_down(table, now, need)
     else:
@@ -119,6 +120,7 @@ def parse_command(text):
 
 
 def handle_admin(message):
+    global typing_active
     if 'payload' not in message:
         text = str(message['text'])
         if "/" not in text:
@@ -149,7 +151,12 @@ def handle_admin(message):
                    "id540487388|⠀][id560524444|⠀]\n@everyone"
         send_message(everyone, chat_peer)
     elif payload == '44':
-        F1() #everyone N2
+        F1()  # everyone N2
+    elif payload == '5':
+        if typing_active:
+            typing_active = False
+        else:
+            thread.start()
 
 
 def send_message(message, peer, notify_off=0):
@@ -199,7 +206,7 @@ def delete_from_queue(lesson, id):
                  chat_peer)
 
 
-def send_with_keyboard(message, peer, keyboard, notify_off=0): #no using more
+def send_with_keyboard(message, peer, keyboard, notify_off=0):  # no using more
     r = post("messages.send",
              secret=secret,
              v="5.103",
@@ -232,13 +239,27 @@ def debug():
 def antispam():
     global spam
     if spam <= time.time():
-        spam = int(time.time())+60
+        spam = int(time.time()) + 60
         return True
     else:
         return False
 
 
+def typing():
+    while typing_active:
+        r = post("messages.setActivity",
+                 secret=secret,
+                 access_token=token,
+                 peer_id=chat_peer,
+                 group_id=192889258,
+                 type="audiomessage")
+        #print(r.json())
+        time.sleep(4.5)
+
+
 if __name__ == "__main__":
+    typing_active = False
+    thread = threading.Thread(target=typing, daemon=True)
     ban = []
     base = DataBase("base.db")
     spam = 0
@@ -247,6 +268,7 @@ if __name__ == "__main__":
         while True:
             print(time.ctime())
             update = get_update()
+            3 / 0
             check_all_on_timer()
             deb = 0
             if deb != 0:
