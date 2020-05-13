@@ -268,7 +268,6 @@ if __name__ == "__main__":
         while True:
             print(time.ctime())
             update = get_update()
-            3 / 0
             check_all_on_timer()
             deb = 0
             if deb != 0:
