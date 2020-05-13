@@ -156,6 +156,8 @@ def handle_admin(message):
         if typing_active:
             typing_active = False
         else:
+            typing_active = True
+            thread = threading.Thread(target=typing, daemon=True)
             thread.start()
 
 
@@ -259,7 +261,6 @@ def typing():
 
 if __name__ == "__main__":
     typing_active = False
-    thread = threading.Thread(target=typing, daemon=True)
     ban = []
     base = DataBase("base.db")
     spam = 0
